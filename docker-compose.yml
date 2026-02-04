@@ -1,0 +1,113 @@
+version: "3.8"
+
+# Leetcode-style code runner
+# User submits code -> goes to queue -> judge0 executes it -> result back
+#
+# We have 2 redis instances here (dont get confused):
+# - judge0-redis: judge0 uses this internally, leave it alone
+# - queue-redis: our bullmq queue lives here
+
+services:
+  # judge0 - this is what actually runs the code safely
+  judge0-server:
+    image: judge0/judge0:1.13.1
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    ports:
+      - "2358:2358"
+    privileged: true # needs this for isolate sandbox
+    restart: always
+    depends_on:
+      - judge0-db
+      - judge0-redis
+    networks:
+      - code-exec-network
+
+  # judge0 workers - more workers = more parallel executions
+  judge0-worker:
+    image: judge0/judge0:1.13.1
+    command: ["./scripts/workers"]
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    privileged: true
+    restart: always
+    depends_on:
+      - judge0-server
+    deploy:
+      replicas: 2
+    networks:
+      - code-exec-network
+
+  # judge0's postgres
+  judge0-db:
+    image: postgres:16.2-alpine
+    env_file: judge0.conf
+    volumes:
+      - judge0-postgres-data:/var/lib/postgresql/data/
+    restart: always
+    networks:
+      - code-exec-network
+
+  # judge0's redis - internal to judge0
+  judge0-redis:
+    image: redis:7.2-alpine
+    command: redis-server --appendonly no --requirepass YourRedisPassword123
+    restart: always
+    networks:
+      - code-exec-network
+
+  # OUR redis for bullmq
+  # this is where our job queue data lives
+  queue-redis:
+    image: redis:7.2-alpine
+    command: redis-server --appendonly yes --requirepass QueueRedisPassword123
+    ports:
+      - "6380:6379" # 6380 outside so it doesnt clash
+    volumes:
+      - queue-redis-data:/data
+    restart: always
+    networks:
+      - code-exec-network
+
+  # our api server
+  # handles submissions, manages the queue, serves bull board dashboard
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=queue-redis # our redis, not judge0's
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=QueueRedisPassword123
+      - JUDGE0_URL=http://judge0-server:2358
+      - PORT=3000
+    depends_on:
+      - queue-redis
+      - judge0-server
+    restart: always
+    networks:
+      - code-exec-network
+
+  # frontend with monaco editor
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - api-gateway
+    restart: always
+    networks:
+      - code-exec-network
+
+networks:
+  code-exec-network:
+    driver: bridge
+
+volumes:
+  judge0-postgres-data:
+  queue-redis-data:

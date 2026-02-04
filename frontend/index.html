@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Judge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 18L3 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M15 6L21 12L15 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Code Judge</span>
+    </div>
+    <div class="header-right">
+      <select id="problem-select" class="problem-select"></select>
+      <a href="http://localhost:3000/admin/queues" target="_blank" class="header-link">Queue Dashboard</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <aside class="problem-panel">
+      <div class="problem-header">
+        <div id="problem-title" class="problem-title">Loading...</div>
+        <div class="problem-meta">
+          <span id="problem-difficulty" class="difficulty easy">Easy</span>
+        </div>
+      </div>
+      <div id="problem-content" class="problem-content"></div>
+    </aside>
+
+    <section class="editor-panel">
+      <div class="editor-header">
+        <select id="lang-select" class="lang-select"></select>
+        <div class="editor-actions">
+          <button id="run-btn" class="btn btn-secondary">Run</button>
+          <button id="submit-btn" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+      <div id="editor-container"></div>
+      <div class="resize-handle"></div>
+      <div class="results-panel">
+        <div class="results-tabs">
+          <button class="results-tab active" data-tab="testcases">Testcase</button>
+          <button class="results-tab" data-tab="result">Result</button>
+        </div>
+        <div id="results-content" class="results-content"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="problems.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
