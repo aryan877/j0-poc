@@ -23,6 +23,16 @@ function loadSavedCode(problemId, lang) {
   return localStorage.getItem(key);
 }
 
+function resetCode() {
+  if (!currentProblem) return;
+  const lang = document.getElementById('lang-select').value;
+  const key = getCodeKey(currentProblem.id, lang);
+  localStorage.removeItem(key);
+  if (currentProblem.starterCode[lang]) {
+    editor.setValue(currentProblem.starterCode[lang]);
+  }
+}
+
 // init monaco editor
 require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
 
@@ -93,6 +103,7 @@ function init() {
   });
 
   // buttons
+  document.getElementById('reset-btn').addEventListener('click', resetCode);
   document.getElementById('run-btn').addEventListener('click', runTests);
   document.getElementById('submit-btn').addEventListener('click', submitTests);
 

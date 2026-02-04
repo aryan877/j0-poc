@@ -205,6 +205,8 @@ body {
 }
 
 .btn-primary { background: var(--green); color: #fff; }
+.btn-tertiary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-tertiary:hover { color: var(--text); border-color: var(--text-secondary); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 #editor-container { flex: 1; }
