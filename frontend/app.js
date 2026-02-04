@@ -6,6 +6,23 @@ let activeTab = 'testcases';
 let activeTestCase = 0;
 let testResults = null;
 
+// save/load code from localStorage
+function getCodeKey(problemId, lang) {
+  return `code_${problemId}_${lang}`;
+}
+
+function saveCode() {
+  if (!currentProblem || !editor) return;
+  const lang = document.getElementById('lang-select').value;
+  const key = getCodeKey(currentProblem.id, lang);
+  localStorage.setItem(key, editor.getValue());
+}
+
+function loadSavedCode(problemId, lang) {
+  const key = getCodeKey(problemId, lang);
+  return localStorage.getItem(key);
+}
+
 // init monaco editor
 require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
 
@@ -33,6 +50,12 @@ require(['vs/editor/editor.main'], function () {
   });
 
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runTests);
+
+  // auto-save code on every change
+  editor.onDidChangeModelContent(() => {
+    saveCode();
+  });
+
   init();
 });
 
@@ -115,7 +138,12 @@ function loadProblem(id) {
   // set starter code and language mode
   const lang = document.getElementById('lang-select').value;
   monaco.editor.setModelLanguage(editor.getModel(), LANG_MAP[lang].monaco);
-  if (currentProblem.starterCode[lang]) {
+
+  // load saved code or fall back to starter code
+  const savedCode = loadSavedCode(currentProblem.id, lang);
+  if (savedCode) {
+    editor.setValue(savedCode);
+  } else if (currentProblem.starterCode[lang]) {
     editor.setValue(currentProblem.starterCode[lang]);
   }
 
@@ -131,7 +159,13 @@ function loadProblem(id) {
 
 function changeLanguage(lang) {
   monaco.editor.setModelLanguage(editor.getModel(), LANG_MAP[lang].monaco);
-  if (currentProblem && currentProblem.starterCode[lang]) {
+  if (!currentProblem) return;
+
+  // load saved code or fall back to starter code
+  const savedCode = loadSavedCode(currentProblem.id, lang);
+  if (savedCode) {
+    editor.setValue(savedCode);
+  } else if (currentProblem.starterCode[lang]) {
     editor.setValue(currentProblem.starterCode[lang]);
   }
 }
