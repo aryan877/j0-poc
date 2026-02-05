@@ -409,31 +409,54 @@ body {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+  }
+
   .main {
     flex-direction: column;
+    overflow: visible;
+    min-height: calc(100vh - 50px);
   }
 
   .problem-panel {
     width: 100%;
-    height: 35vh;
-    min-height: 200px;
+    height: auto;
+    max-height: 35vh;
+    min-height: 150px;
     border-right: none;
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
   }
 
   .editor-panel {
-    height: 65vh;
+    flex: 1;
+    min-height: 400px;
+  }
+
+  #editor-container {
+    min-height: 250px;
+    height: 300px;
   }
 
   .results-panel {
-    height: 180px;
+    height: 200px;
+    min-height: 180px;
+    flex-shrink: 0;
   }
 }
 
 @media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+  }
+
   .header {
     padding: 0 12px;
     height: 46px;
+    flex-shrink: 0;
   }
 
   .logo {
@@ -446,13 +469,13 @@ body {
   }
 
   .header-right {
-    gap: 8px;
+    gap: 6px;
   }
 
   .problem-select {
     font-size: 12px;
     padding: 5px 8px;
-    max-width: 140px;
+    max-width: 120px;
   }
 
   .header-link {
@@ -460,9 +483,14 @@ body {
     padding: 5px 8px;
   }
 
+  .main {
+    flex-direction: column;
+    overflow: visible;
+  }
+
   .problem-panel {
-    height: 30vh;
-    min-height: 180px;
+    max-height: 30vh;
+    min-height: 120px;
   }
 
   .problem-header {
@@ -480,6 +508,8 @@ body {
 
   .editor-header {
     padding: 6px 10px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .lang-select {
@@ -496,8 +526,14 @@ body {
     gap: 6px;
   }
 
+  #editor-container {
+    min-height: 200px;
+    height: 250px;
+  }
+
   .results-panel {
-    height: 160px;
+    height: 180px;
+    min-height: 160px;
   }
 
   .results-tab {
@@ -521,8 +557,8 @@ body {
   }
 
   .problem-panel {
-    height: 25vh;
-    min-height: 150px;
+    max-height: 25vh;
+    min-height: 100px;
   }
 
   .problem-title {
@@ -543,7 +579,13 @@ body {
     font-size: 11px;
   }
 
+  #editor-container {
+    min-height: 180px;
+    height: 220px;
+  }
+
   .results-panel {
-    height: 140px;
+    height: 160px;
+    min-height: 140px;
   }
 }
